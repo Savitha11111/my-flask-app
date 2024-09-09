@@ -8,58 +8,31 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                script {
-                    // Install Python if not already installed
-                    def pythonPath = tool name: 'Python', type: 'PythonInstallation'
-                    
-                    // Upgrade pip
-                    bat """
-                    ${pythonPath}/python.exe -m pip install --upgrade pip
-                    """
-
-                    // Create and activate a virtual environment
-                    bat """
-                    python -m venv ${VIRTUAL_ENV}
-                    ${VIRTUAL_ENV}/Scripts/activate
-                    """
-                }
+                bat 'python -m pip install --upgrade pip'
+                bat 'python -m venv ${VIRTUAL_ENV}'
+                bat 'call ${VIRTUAL_ENV}/Scripts/activate'
             }
         }
         stage('Install Dependencies') {
             steps {
-                script {
-                    // Install dependencies
-                    bat """
-                    ${VIRTUAL_ENV}/Scripts/activate
-                    pip install -r requirements.txt
-                    """
-                }
+                bat 'call ${VIRTUAL_ENV}/Scripts/activate && pip install -r requirements.txt'
             }
         }
         stage('Test') {
             steps {
-                script {
-                    // Run tests
-                    bat """
-                    ${VIRTUAL_ENV}/Scripts/activate
-                    python -m unittest discover
-                    """
-                }
+                bat 'call ${VIRTUAL_ENV}/Scripts/activate && python -m unittest discover'
             }
         }
         stage('Deploy') {
             steps {
-                script {
-                    // Deploy your application here
-                    // For example, you might run a script to start the Flask app or deploy to a server
-                }
+                // Add your deployment steps here
+                echo 'Deploy stage placeholder'
             }
         }
     }
 
     post {
         always {
-            // Clean up actions, if any
             echo 'Cleaning up...'
         }
         success {

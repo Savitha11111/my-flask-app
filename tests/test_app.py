@@ -1,15 +1,15 @@
 import unittest
-from app import create_app
+from app import app
 
-class FlaskAppTests(unittest.TestCase):
-
+class BasicTests(unittest.TestCase):
     def setUp(self):
-        self.app = create_app().test_client()
+        self.app = app.test_client()
+        self.app.testing = True
 
-    def test_home(self):
-        rv = self.app.get('/')
-        self.assertEqual(rv.status_code, 200)
-        self.assertIn(b"Hello, Flask with Jenkins!", rv.data)
+    def test_home_page(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Hello, World!', response.data)
 
 if __name__ == '__main__':
     unittest.main()

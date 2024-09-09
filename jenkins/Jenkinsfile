@@ -1,29 +1,72 @@
 pipeline {
     agent any
 
+    environment {
+        VIRTUAL_ENV = "${WORKSPACE}/venv"
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Setup') {
             steps {
-                git 'https://github.com/Savitha11111/my-flask-app.git'
+                script {
+                    // Install Python if not already installed
+                    def pythonPath = tool name: 'Python', type: 'PythonInstallation'
+                    
+                    // Upgrade pip
+                    bat """
+                    ${pythonPath}/python.exe -m pip install --upgrade pip
+                    """
+
+                    // Create and activate a virtual environment
+                    bat """
+                    python -m venv ${VIRTUAL_ENV}
+                    ${VIRTUAL_ENV}/Scripts/activate
+                    """
+                }
             }
         }
-
         stage('Install Dependencies') {
             steps {
-                bat 'pip install -r requirements.txt'
+                script {
+                    // Install dependencies
+                    bat """
+                    ${VIRTUAL_ENV}/Scripts/activate
+                    pip install -r requirements.txt
+                    """
+                }
             }
         }
-
         stage('Test') {
             steps {
-                bat 'python -m unittest tests.py'
+                script {
+                    // Run tests
+                    bat """
+                    ${VIRTUAL_ENV}/Scripts/activate
+                    python -m unittest discover
+                    """
+                }
             }
         }
-
         stage('Deploy') {
             steps {
-                echo 'Deploy stage is currently empty. Add deployment commands here.'
+                script {
+                    // Deploy your application here
+                    // For example, you might run a script to start the Flask app or deploy to a server
+                }
             }
+        }
+    }
+
+    post {
+        always {
+            // Clean up actions, if any
+            echo 'Cleaning up...'
+        }
+        success {
+            echo 'Build and test successful!'
+        }
+        failure {
+            echo 'Build or test failed!'
         }
     }
 }

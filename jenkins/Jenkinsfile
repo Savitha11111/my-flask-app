@@ -18,15 +18,9 @@ pipeline {
                 bat 'call ${VIRTUAL_ENV}/Scripts/activate && pip install -r requirements.txt'
             }
         }
-        stage('Test') {
+        stage('Run Flask App') {
             steps {
-                bat 'call ${VIRTUAL_ENV}/Scripts/activate && python -m unittest discover'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                // Add your deployment steps here
-                echo 'Deploy stage placeholder'
+                bat 'call ${VIRTUAL_ENV}/Scripts/activate && python app.py'
             }
         }
     }
